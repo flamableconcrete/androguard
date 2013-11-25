@@ -38,7 +38,7 @@ from androguard.decompiler.decompiler import *
 
 from androguard.core import androconf
 
-from IPython.frontend.terminal.embed import InteractiveShellEmbed
+from IPython.terminal.embed import InteractiveShellEmbed
 from IPython.config.loader import Config
 
 from cPickle import dumps, loads
@@ -100,7 +100,7 @@ def load_session(filename):
     return loads(open(filename, "r").read())
 
 
-def AnalyzeAPK(filename, raw=False, decompiler=None):
+def AnalyzeAPK(filename, raw=False, decompiler=None, zipmodule=2):
     """
         Analyze an android application and setup all stuff for a more quickly analysis !
 
@@ -110,11 +110,13 @@ def AnalyzeAPK(filename, raw=False, decompiler=None):
         :type raw: boolean
         :param decompiler: ded, dex2jad, dad (optional)
         :type decompiler: string
+        :param zipmodule: 0 (chilkat), 1 (builtin python), 2 (patched python)
+        :type decompiler: int
 
         :rtype: return the :class:`APK`, :class:`DalvikVMFormat`, and :class:`VMAnalysis` objects
     """
     androconf.debug("APK ...")
-    a = APK(filename, raw)
+    a = APK(filename, raw, zipmodule=zipmodule)
     d, dx = AnalyzeDex(a.get_dex(), raw=True, decompiler=decompiler)
     return a, d, dx
 
@@ -297,7 +299,7 @@ def main(options, arguments):
             for method in _a.get("method", options.method) :
                 if options.pretty != None :
                     _a.ianalyze()
-                    method.pretty_show() 
+                    method.pretty_show()
                 else :
                     method.show()
 
